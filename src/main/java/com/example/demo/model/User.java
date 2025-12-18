@@ -21,10 +21,16 @@ public class User {
 
     private String role = "AGENT";
 
-    //constructor
-    
-    User(){
-    
+    // ✅ REQUIRED BY JPA
+    public User() {
+    }
+
+    // ✅ REQUIRED BY TEST CASES
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = "AGENT";
     }
 
     // getters & setters
