@@ -48,6 +48,12 @@ public class User {
         this.role = role;
     }
 
+    //constructor injection
+
+    public User(){
+        
+    }
+
     // Getters and Setters
 
     public Long getId() {
