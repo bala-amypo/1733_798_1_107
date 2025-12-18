@@ -68,6 +68,15 @@ public class Parcel {
         this.weightKg = weightKg;
     }
 
+
+    //constructor
+
+    Parcel(){
+        
+    }
+
+
+
     // Getter & Setter for deliveredAt
     public LocalDateTime getDeliveredAt() {
         return deliveredAt;
