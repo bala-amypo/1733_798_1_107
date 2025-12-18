@@ -15,6 +15,12 @@ public class ClaimRule {
 
     private Double weight;
 
+    //constructor
+
+    ClaimRule(){
+        
+    }
+
     // Getter & Setter for id
     public Long getId() {
         return id;

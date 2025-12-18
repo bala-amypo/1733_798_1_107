@@ -42,6 +42,8 @@ public class Evidence {
         this.claim = claim;
     }
 
+    //Constructo
+
     // Getter & Setter for evidenceType
     public String getEvidenceType() {
         return evidenceType;
