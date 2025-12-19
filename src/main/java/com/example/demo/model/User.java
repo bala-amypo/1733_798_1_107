@@ -25,13 +25,14 @@ public class User {
     public User() {
     }
 
-    // ✅ REQUIRED BY TEST CASES
-    public User(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = "AGENT";
-    }
+    public User(String email, String name, String password, String role, String status) {
+    this.email = email;
+    this.name = name;
+    this.password = password;
+    this.role = role;
+    this.status = status;
+}
+
 
     
     
