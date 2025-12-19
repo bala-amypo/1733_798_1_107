@@ -12,28 +12,31 @@ public class ParcelServiceImpl implements ParcelService {
 
     private final ParcelRepository parcelRepository;
 
-    // REQUIRED CONSTRUCTOR ORDER: (ParcelRepository)
+    // ✅ REQUIRED constructor
     public ParcelServiceImpl(ParcelRepository parcelRepository) {
         this.parcelRepository = parcelRepository;
     }
 
     @Override
     public Parcel addParcel(Parcel parcel) {
-        if (parcel.getWeightKg() == null || parcel.getWeightKg() <= 0) {
-            throw new BadRequestException("Weight must be positive");
-        }
+
         if (parcelRepository.existsByTrackingNumber(parcel.getTrackingNumber())) {
-            throw new BadRequestException("Tracking number exists");
+            throw new BadRequestException("Tracking number already exists");
         }
+
+        if (parcel.getWeightKg() == null || parcel.getWeightKg() <= 0) {
+            throw new BadRequestException("Invalid weight");
+        }
+
         return parcelRepository.save(parcel);
     }
 
     @Override
     public Parcel getByTrackingNumber(String trackingNumber) {
-        Parcel parcel = parcelRepository.findByTrackingNumber(trackingNumber);
-        if (parcel == null) {
-            throw new ResourceNotFoundException("Parcel not found");
-        }
-        return parcel;
+
+        return parcelRepository.findByTrackingNumber(trackingNumber)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Parcel not found")
+                );
     }
 }

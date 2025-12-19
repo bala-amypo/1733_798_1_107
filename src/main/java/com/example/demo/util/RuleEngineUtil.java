@@ -1,28 +1,51 @@
 package com.example.demo.util;
 
 import com.example.demo.model.ClaimRule;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class RuleEngineUtil {
 
-    public static double computeScore(String description, List<ClaimRule> rules) {
+    // ✅ REQUIRED by tests
+    public static double computeScore(String claimDescription, List<ClaimRule> rules) {
+
         double score = 0.0;
 
-        if (description == null || rules == null) {
+        if (rules == null || rules.isEmpty()) {
             return score;
         }
 
         for (ClaimRule rule : rules) {
-            if (rule.getConditionExpression() != null &&
-                description.toLowerCase()
-                        .contains(rule.getConditionExpression().toLowerCase())) {
 
-                if (rule.getWeight() != null) {
-                    score += rule.getWeight();
+            String expression = rule.getConditionExpression();
+            Double weight = rule.getWeight();
+
+            if (expression == null || weight == null) {
+                continue;
+            }
+
+            // Rule: always
+            if ("always".equalsIgnoreCase(expression)) {
+                score += weight;
+            }
+
+            // Rule: description_contains:KEYWORD
+            else if (expression.startsWith("description_contains:")) {
+
+                if (claimDescription != null) {
+                    String keyword = expression.substring(
+                            "description_contains:".length()
+                    );
+
+                    if (claimDescription.toLowerCase()
+                            .contains(keyword.toLowerCase())) {
+                        score += weight;
+                    }
                 }
             }
         }
-        return score;
+
+        // Cap score to max 1.0
+        return Math.min(score, 1.0);
     }
 }

@@ -14,20 +14,22 @@ import java.util.List;
 public class EvidenceServiceImpl implements EvidenceService {
 
     private final EvidenceRepository evidenceRepository;
-    private final DamageClaimRepository damageClaimRepository;
+    private final DamageClaimRepository claimRepository;
 
-    // REQUIRED CONSTRUCTOR ORDER:
-    // (EvidenceRepository, DamageClaimRepository)
+    // ✅ REQUIRED constructor
     public EvidenceServiceImpl(EvidenceRepository evidenceRepository,
-                               DamageClaimRepository damageClaimRepository) {
+                              DamageClaimRepository claimRepository) {
         this.evidenceRepository = evidenceRepository;
-        this.damageClaimRepository = damageClaimRepository;
+        this.claimRepository = claimRepository;
     }
 
     @Override
     public Evidence uploadEvidence(Long claimId, Evidence evidence) {
-        DamageClaim claim = damageClaimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
+
+        DamageClaim claim = claimRepository.findById(claimId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Claim not found")
+                );
 
         evidence.setClaim(claim);
         return evidenceRepository.save(evidence);
@@ -35,6 +37,7 @@ public class EvidenceServiceImpl implements EvidenceService {
 
     @Override
     public List<Evidence> getEvidenceForClaim(Long claimId) {
+
         return evidenceRepository.findByClaim_Id(claimId);
     }
 }
