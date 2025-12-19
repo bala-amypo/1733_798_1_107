@@ -11,23 +11,25 @@ import java.util.List;
 @Service
 public class ClaimRuleServiceImpl implements ClaimRuleService {
 
-    private final ClaimRuleRepository claimRuleRepository;
+    private final ClaimRuleRepository ruleRepository;
 
-    // REQUIRED CONSTRUCTOR ORDER: (ClaimRuleRepository)
-    public ClaimRuleServiceImpl(ClaimRuleRepository claimRuleRepository) {
-        this.claimRuleRepository = claimRuleRepository;
+    // ✅ REQUIRED constructor
+    public ClaimRuleServiceImpl(ClaimRuleRepository ruleRepository) {
+        this.ruleRepository = ruleRepository;
     }
 
     @Override
     public ClaimRule addRule(ClaimRule rule) {
+
         if (rule.getWeight() == null || rule.getWeight() < 0) {
             throw new BadRequestException("Invalid weight");
         }
-        return claimRuleRepository.save(rule);
+
+        return ruleRepository.save(rule);
     }
 
     @Override
     public List<ClaimRule> getAllRules() {
-        return claimRuleRepository.findAll();
+        return ruleRepository.findAll();
     }
 }

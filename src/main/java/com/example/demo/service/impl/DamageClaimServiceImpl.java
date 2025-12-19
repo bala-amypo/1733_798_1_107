@@ -17,57 +17,64 @@ import java.util.List;
 public class DamageClaimServiceImpl implements DamageClaimService {
 
     private final ParcelRepository parcelRepository;
-    private final DamageClaimRepository damageClaimRepository;
-    private final ClaimRuleRepository claimRuleRepository;
+    private final DamageClaimRepository claimRepository;
+    private final ClaimRuleRepository ruleRepository;
 
-    // REQUIRED CONSTRUCTOR ORDER:
-    // (ParcelRepository, DamageClaimRepository, ClaimRuleRepository)
+    // ✅ REQUIRED constructor (ORDER MATTERS)
     public DamageClaimServiceImpl(ParcelRepository parcelRepository,
-                                 DamageClaimRepository damageClaimRepository,
-                                 ClaimRuleRepository claimRuleRepository) {
+                                 DamageClaimRepository claimRepository,
+                                 ClaimRuleRepository ruleRepository) {
         this.parcelRepository = parcelRepository;
-        this.damageClaimRepository = damageClaimRepository;
-        this.claimRuleRepository = claimRuleRepository;
+        this.claimRepository = claimRepository;
+        this.ruleRepository = ruleRepository;
     }
 
     @Override
     public DamageClaim fileClaim(Long parcelId, DamageClaim claim) {
+
         Parcel parcel = parcelRepository.findById(parcelId)
-                .orElseThrow(() -> new ResourceNotFoundException("Parcel not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Parcel not found")
+                );
 
         claim.setParcel(parcel);
         claim.setStatus("PENDING");
 
-        return damageClaimRepository.save(claim);
+        return claimRepository.save(claim);
     }
 
     @Override
     public DamageClaim evaluateClaim(Long claimId) {
-        DamageClaim claim = damageClaimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
 
-        List<ClaimRule> rules = claimRuleRepository.findAll();
+        DamageClaim claim = claimRepository.findById(claimId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Claim not found")
+                );
+
+        List<ClaimRule> rules = ruleRepository.findAll();
 
         double score = RuleEngineUtil.computeScore(
-                claim.getClaimDescription(), rules);
+                claim.getClaimDescription(), rules
+        );
 
         claim.setScore(score);
-        claim.setAppliedRules(rules);
+        claim.getAppliedRules().addAll(rules);
 
-        if (score >= 10) {
+        if (score > 0.9) {
             claim.setStatus("APPROVED");
-        } else if (score >= 5) {
-            claim.setStatus("SUSPICIOUS");
-        } else {
+        } else if (score == 0.0) {
             claim.setStatus("REJECTED");
         }
 
-        return damageClaimRepository.save(claim);
+        return claimRepository.save(claim);
     }
 
     @Override
     public DamageClaim getClaim(Long claimId) {
-        return damageClaimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
+
+        return claimRepository.findById(claimId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Claim not found")
+                );
     }
 }
