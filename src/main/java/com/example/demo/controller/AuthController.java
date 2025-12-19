@@ -9,7 +9,6 @@ import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +21,6 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ REQUIRED constructor (constructor injection)
     public AuthController(UserService userService,
                           JwtUtil jwtUtil,
                           PasswordEncoder passwordEncoder) {
@@ -31,22 +29,20 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ REGISTER
     @PostMapping("/register")
     @Operation(summary = "Register new user")
     public User register(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode((@Nullable CharSequence) user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.register(user);
     }
 
-    // ✅ LOGIN
     @PostMapping("/login")
     @Operation(summary = "Login user")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
         User user = userService.findByEmail(request.getEmail());
 
-        if (!passwordEncoder.matches(request.getPassword(), (@Nullable String) user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
