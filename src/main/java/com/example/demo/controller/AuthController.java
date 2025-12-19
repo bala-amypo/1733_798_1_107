@@ -29,6 +29,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ✅ REGISTER (password encoded ONLY here)
     @PostMapping("/register")
     @Operation(summary = "Register new user")
     public User register(@RequestBody User user) {
@@ -36,6 +37,7 @@ public class AuthController {
         return userService.register(user);
     }
 
+    // ✅ LOGIN (password matched correctly)
     @PostMapping("/login")
     @Operation(summary = "Login user")
     public AuthResponse login(@RequestBody AuthRequest request) {
