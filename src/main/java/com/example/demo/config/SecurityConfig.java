@@ -37,24 +37,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // ✅ THIS FIXES YOUR 403 ON /auth/login
+            // ✅ Disable CSRF (required for REST + POST)
             .csrf(AbstractHttpConfigurer::disable)
 
+            // ✅ Stateless JWT
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
+            // ✅ Authorization rules (FIXED)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                        "/auth/register",
-                        "/auth/login",
-                        "/demo",
+                        "/auth/**",
+                        "/demo/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
 
+            // ✅ JWT filter
             .addFilterBefore(
                     jwtAuthenticationFilter,
                     UsernamePasswordAuthenticationFilter.class
