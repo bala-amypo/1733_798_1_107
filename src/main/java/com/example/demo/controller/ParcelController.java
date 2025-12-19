@@ -2,11 +2,15 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Parcel;
 import com.example.demo.service.ParcelService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+
+
 @RestController
-@RequestMapping("/api/parcels")
+@RequestMapping("/parcels")
 @Tag(name = "Parcels")
 public class ParcelController {
 
@@ -16,15 +20,15 @@ public class ParcelController {
         this.parcelService = parcelService;
     }
 
-    // POST /api/parcels
     @PostMapping
+    @Operation(summary = "Add new parcel")
     public Parcel addParcel(@RequestBody Parcel parcel) {
         return parcelService.addParcel(parcel);
     }
 
-    // GET /api/parcels/tracking/{trackingNumber}
     @GetMapping("/tracking/{trackingNumber}")
-    public Parcel getParcel(@PathVariable String trackingNumber) {
+    @Operation(summary = "Get parcel by tracking number")
+    public Parcel getByTracking(@PathVariable String trackingNumber) {
         return parcelService.getByTrackingNumber(trackingNumber);
     }
 }
