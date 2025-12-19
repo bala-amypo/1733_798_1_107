@@ -1,8 +1,19 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+
+import org.springframework.stereotype.Service;
+
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    // ✅ Constructor injection (required by tests)
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -17,7 +28,7 @@ public class UserServiceImpl implements UserService {
             user.setRole("AGENT");
         }
 
-        // ❌ DO NOT encode password here
+        // ❌ Do NOT encode password here
         return userRepository.save(user);
     }
 
