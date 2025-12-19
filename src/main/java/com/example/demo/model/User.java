@@ -21,21 +21,16 @@ public class User {
 
     private String role = "AGENT";
 
-    // ✅ REQUIRED BY JPA
-    public User() {
+    // REQUIRED
+    public User() {}
+
+    // REQUIRED BY TESTS
+    public User(String name, String email, String password, String role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role != null ? role : "AGENT";
     }
-
-    public User(String email, String name, String password, String role, String status) {
-    this.email = email;
-    this.name = name;
-    this.password = password;
-    this.role = role;
-    this.status = status;
-}
-
-
-    
-    
 
     // getters & setters
     public Long getId() { return id; }
