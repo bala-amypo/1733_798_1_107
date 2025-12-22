@@ -37,21 +37,23 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // ✅ Disable CSRF (required for REST + POST)
+            // ✅ Disable CSRF & CORS (IMPORTANT)
             .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
 
             // ✅ Stateless JWT
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // ✅ Authorization rules (FIXED)
+            // ✅ Allow auth + swagger
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                         "/auth/**",
                         "/demo/**",
                         "/swagger-ui/**",
-                        "/v3/api-docs/**"
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
