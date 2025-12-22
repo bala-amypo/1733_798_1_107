@@ -5,48 +5,49 @@ import com.example.demo.dto.AuthResponse;
 import com.example.demo.model.User;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Authentication")
 public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     public AuthController(UserService userService,
                           JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
-    // ✅ REGISTER (password encoded ONLY here)
+    // ✅ REGISTER
     @PostMapping("/register")
-    @Operation(summary = "Register new user")
     public User register(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.register(user);
     }
 
-    // ✅ LOGIN (password matched correctly)
+    // ✅ LOGIN (FIXED)
     @PostMapping("/login")
-    @Operation(summary = "Login user")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
-        User user = userService.findByEmail(request.getEmail());
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
-        }
+        User user = userService.findByEmail(request.getEmail());
 
         String token = jwtUtil.generateToken(
                 user.getId(),
