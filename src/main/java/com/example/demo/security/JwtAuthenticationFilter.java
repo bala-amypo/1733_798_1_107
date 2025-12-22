@@ -29,6 +29,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // ✅ SKIP login, register & swagger
+        if (path.startsWith("/auth/")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         // Expecting: Authorization: Bearer <token>
@@ -42,7 +52,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = claims.get("email", String.class);
                 String role = claims.get("role", String.class);
 
-                // Create authentication object
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 email,
@@ -52,10 +61,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 )
                         );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
 
             } catch (Exception e) {
-                // Invalid or expired token → do nothing
+                // Invalid or expired token
                 SecurityContextHolder.clearContext();
             }
         }
