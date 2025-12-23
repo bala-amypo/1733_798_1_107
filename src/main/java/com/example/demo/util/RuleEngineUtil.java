@@ -6,7 +6,6 @@ import java.util.List;
 
 public class RuleEngineUtil {
 
-    // ✅ REQUIRED by tests
     public static double computeScore(String claimDescription, List<ClaimRule> rules) {
 
         double score = 0.0;
@@ -24,12 +23,10 @@ public class RuleEngineUtil {
                 continue;
             }
 
-            // Rule: always
             if ("always".equalsIgnoreCase(expression)) {
                 score += weight;
             }
 
-            // Rule: description_contains:KEYWORD
             else if (expression.startsWith("description_contains:")) {
 
                 if (claimDescription != null) {
