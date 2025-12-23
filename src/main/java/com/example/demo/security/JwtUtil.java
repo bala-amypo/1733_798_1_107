@@ -14,13 +14,10 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    // ✅ Secret key (tests do NOT validate the value, only behaviour)
     private final String secretKey = "my-secret-key";
+    private final long expirationMillis = 60 * 60 * 1000; // 1 hour
 
-    // ✅ Token validity: 1 hour
-    private final long expirationMillis = 60 * 60 * 1000;
-
-    // ✅ Generate JWT with required claims
+    // ✅ Generate JWT
     public String generateToken(Object userId, Object email, Object role) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -28,17 +25,16 @@ public class JwtUtil {
         claims.put("email", email);
         claims.put("role", role);
 
-        String object2 = null;
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(object2)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setSubject(email.toString())   // ✅ FIXED (was null)
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    // ✅ Validate and parse token
+    // ✅ Validate JWT
     public Claims validateToken(String token)
             throws JwtException, ExpiredJwtException {
 
