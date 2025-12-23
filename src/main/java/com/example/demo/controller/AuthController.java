@@ -29,14 +29,14 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
-    // ✅ REGISTER
+    //  REGISTER
     @PostMapping("/register")
     public User register(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.register(user);
     }
 
-    // ✅ LOGIN (FIXED)
+    //  LOGIN 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
