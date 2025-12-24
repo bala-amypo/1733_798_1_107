@@ -1,41 +1,10 @@
-package com.example.demo.service.impl;
+package com.example.demo.service;
 
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
 
-import org.springframework.stereotype.Service;
+public interface UserService {
 
-@Service
-public class UserServiceImpl implements UserService {
+    User register(User user);
 
-    private final UserRepository userRepository;
-
-    // ✅ Constructor injection (required by tests)
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public User register(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new BadRequestException("Email already exists");
-        }
-
-        if (user.getRole() == null) {
-            user.setRole("AGENT");
-        }
-
-        // ❌ Do NOT encode password here
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found"));
-    }
+    User findByEmail(String email);
 }
