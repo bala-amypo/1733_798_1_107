@@ -5,6 +5,7 @@ import com.example.demo.dto.AuthResponse;
 import com.example.demo.model.User;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,14 +30,14 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
-    //  REGISTER
+    // ✅ REGISTER
     @PostMapping("/register")
     public User register(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.register(user);
     }
 
-    //  LOGIN 
+    // ✅ LOGIN (FIXED)
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
@@ -47,7 +48,9 @@ public class AuthController {
                 )
         );
 
-        User user = userService.findByEmail(request.getEmail());
+        // ✅ FIX: unwrap Optional<User>
+        User user = userService.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         String token = jwtUtil.generateToken(
                 user.getId(),
