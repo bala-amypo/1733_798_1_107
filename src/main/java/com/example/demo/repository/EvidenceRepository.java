@@ -7,6 +7,9 @@ import java.util.List;
 
 public interface EvidenceRepository extends JpaRepository<Evidence, Long> {
 
-    // ✅ REQUIRED
+    // ✅ REQUIRED by tests
+    long countByClaim_Id(Long claimId);
+
+    // ✅ REQUIRED by tests
     List<Evidence> findByClaim_Id(Long claimId);
 }
