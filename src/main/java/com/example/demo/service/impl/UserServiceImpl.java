@@ -5,6 +5,8 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -16,12 +18,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User user) {
-
-        // ✅ Safety check (extra)
-        if (user.getRole() == null) {
+        if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("USER");
         }
-
         return userRepository.save(user);
+    }
+
+    // ✅ REQUIRED
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }
