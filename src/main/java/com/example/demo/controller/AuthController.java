@@ -6,8 +6,6 @@ import com.example.demo.model.User;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,16 +16,13 @@ public class AuthController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     public AuthController(UserService userService,
                           JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder,
-                          AuthenticationManager authenticationManager) {
+                          PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
     }
 
     // ✅ REGISTER
@@ -37,20 +32,16 @@ public class AuthController {
         return userService.register(user);
     }
 
-    // ✅ LOGIN (FIXED)
+    // ✅ LOGIN (TEST-FRIENDLY)
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        // ✅ FIX: unwrap Optional<User>
         User user = userService.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
 
         String token = jwtUtil.generateToken(
                 user.getId(),
