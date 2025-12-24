@@ -20,10 +20,13 @@ public class User {
 
     private String password;
 
-    private String role;
+    // ✅ DEFAULT ROLE FIX
+    @Column(nullable = false)
+    private String role = "USER";
 
     // ✅ No-arg constructor (REQUIRED)
     public User() {
+        // role already set to USER
     }
 
     // ✅ Parameterized constructor (REQUIRED by tests)
@@ -31,7 +34,17 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
+
+        // ✅ SAFETY: if role is null → USER
+        this.role = (role == null || role.isEmpty()) ? "USER" : role;
+    }
+
+    // ✅ Auto-fix if role not set before persist
+    @PrePersist
+    protected void assignDefaultRole() {
+        if (this.role == null || this.role.isEmpty()) {
+            this.role = "USER";
+        }
     }
 
     // ===== Getters & Setters =====
