@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,7 @@ public class DamageClaim {
 
     private String status;
 
-    private Double score;
+    private Double score; // MUST remain null initially
 
     // REQUIRED by tests
     @ManyToMany
@@ -34,19 +35,25 @@ public class DamageClaim {
             joinColumns = @JoinColumn(name = "claim_id"),
             inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
-    private Set<ClaimRule> appliedRules = new HashSet<>();
+    private Set<ClaimRule> appliedRules;
 
     @OneToMany(mappedBy = "claim", cascade = CascadeType.ALL)
     private List<Evidence> evidenceList;
 
-    // ✅ Default constructor
+    // ✅ Default constructor (REQUIRED by tests)
     public DamageClaim() {
-        this.status = "PENDING";
+        this.status = "PENDING";                 // ⭐ REQUIRED
+        this.filedAt = LocalDateTime.now();      // ⭐ REQUIRED
+        this.appliedRules = new HashSet<>();     // ⭐ REQUIRED
+        this.evidenceList = new ArrayList<>();   // ⭐ REQUIRED
+        // ❌ score intentionally NOT initialized
     }
 
     @PrePersist
     public void onCreate() {
-        this.filedAt = LocalDateTime.now();
+        if (this.filedAt == null) {
+            this.filedAt = LocalDateTime.now();
+        }
     }
 
     // ===== Getters & Setters =====
@@ -89,6 +96,10 @@ public class DamageClaim {
 
     public Set<ClaimRule> getAppliedRules() {
         return appliedRules;
+    }
+
+    public List<Evidence> getEvidenceList() {
+        return evidenceList;
     }
 
     public void setStatus(String status) {

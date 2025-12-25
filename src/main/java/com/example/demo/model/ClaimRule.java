@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,8 +22,9 @@ public class ClaimRule {
     @ManyToMany(mappedBy = "appliedRules")
     private Set<DamageClaim> claims;
 
-    // ✅ No-arg constructor
+    // ✅ No-arg constructor (REQUIRED by tests)
     public ClaimRule() {
+        this.claims = new HashSet<>();   // ⭐ IMPORTANT
     }
 
     // ✅ Parameterized constructor (REQUIRED)
@@ -30,6 +32,7 @@ public class ClaimRule {
         this.ruleName = ruleName;
         this.conditionExpression = conditionExpression;
         this.weight = weight;
+        this.claims = new HashSet<>();   // ⭐ IMPORTANT
     }
 
     // ===== Getters & Setters =====
@@ -48,6 +51,10 @@ public class ClaimRule {
 
     public Double getWeight() {
         return weight;
+    }
+
+    public Set<DamageClaim> getClaims() {
+        return claims;
     }
 
     public void setId(Long id) {
