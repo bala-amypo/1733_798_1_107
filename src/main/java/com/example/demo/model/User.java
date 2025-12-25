@@ -22,8 +22,9 @@ public class User {
 
     private String role;
 
-    // ✅ No-arg constructor (REQUIRED)
+    // ✅ No-arg constructor (REQUIRED by JPA + TESTS)
     public User() {
+        this.role = "AGENT";   // ⭐ IMPORTANT DEFAULT
     }
 
     // ✅ Parameterized constructor (REQUIRED by tests)
@@ -76,4 +77,3 @@ public class User {
         this.role = role;
     }
 }
-

@@ -3,12 +3,14 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "parcels", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "trackingNumber")
-})
+@Table(
+    name = "parcels",
+    uniqueConstraints = @UniqueConstraint(columnNames = "trackingNumber")
+)
 public class Parcel {
 
     @Id
@@ -34,8 +36,9 @@ public class Parcel {
     @ManyToOne
     private User user;
 
-    // ✅ No-arg constructor
+    // ✅ No-arg constructor (REQUIRED by tests)
     public Parcel() {
+        this.claims = new ArrayList<>(); // ⭐ IMPORTANT
     }
 
     // ✅ Parameterized constructor (REQUIRED)
@@ -45,6 +48,7 @@ public class Parcel {
         this.senderName = senderName;
         this.receiverName = receiverName;
         this.weightKg = weightKg;
+        this.claims = new ArrayList<>(); // ⭐ IMPORTANT
     }
 
     // ===== Getters & Setters =====
@@ -95,5 +99,21 @@ public class Parcel {
 
     public void setDeliveredAt(LocalDateTime deliveredAt) {
         this.deliveredAt = deliveredAt;
+    }
+
+    public List<DamageClaim> getClaims() {
+        return claims;
+    }
+
+    public void setClaims(List<DamageClaim> claims) {
+        this.claims = claims;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

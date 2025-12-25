@@ -22,13 +22,16 @@ public class Evidence {
 
     private LocalDateTime uploadedAt;
 
-    // ✅ No-arg constructor
+    // ✅ No-arg constructor (REQUIRED by tests)
     public Evidence() {
+        this.uploadedAt = LocalDateTime.now(); // ⭐ IMPORTANT
     }
 
     @PrePersist
     public void onUpload() {
-        this.uploadedAt = LocalDateTime.now();
+        if (this.uploadedAt == null) {
+            this.uploadedAt = LocalDateTime.now();
+        }
     }
 
     // ===== Getters & Setters =====
