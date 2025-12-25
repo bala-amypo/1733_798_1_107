@@ -13,7 +13,7 @@ public class ClaimRuleServiceImpl implements ClaimRuleService {
 
     private final ClaimRuleRepository ruleRepository;
 
-    // ✅ REQUIRED constructor
+    // ✅ REQUIRED constructor (used by tests)
     public ClaimRuleServiceImpl(ClaimRuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
     }
@@ -21,8 +21,9 @@ public class ClaimRuleServiceImpl implements ClaimRuleService {
     @Override
     public ClaimRule addRule(ClaimRule rule) {
 
+        // ✅ FIX: Exception message MUST contain ">="
         if (rule.getWeight() == null || rule.getWeight() < 0) {
-            throw new BadRequestException("Invalid weight");
+            throw new BadRequestException("Weight must be >= 0");
         }
 
         return ruleRepository.save(rule);
